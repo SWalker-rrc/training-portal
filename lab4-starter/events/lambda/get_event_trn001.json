@@ -1,0 +1,13 @@
+{
+    "resource": "/events/{eventId}",
+    "path": "/events/TRN001",
+    "httpMethod": "GET",
+    "pathParameters": {
+        "eventId": "TRN001"
+    },
+    "requestContext": {
+        "requestId": "console-test-get-trn001"
+    },
+    "body": null,
+    "isBase64Encoded": false
+}

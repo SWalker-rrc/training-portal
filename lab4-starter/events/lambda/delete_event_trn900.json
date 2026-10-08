@@ -1,0 +1,13 @@
+{
+    "resource": "/events/{eventId}",
+    "path": "/events/TRN900",
+    "httpMethod": "DELETE",
+    "pathParameters": {
+        "eventId": "TRN900"
+    },
+    "requestContext": {
+        "requestId": "console-test-delete-trn900"
+    },
+    "body": null,
+    "isBase64Encoded": false
+}

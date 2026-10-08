@@ -1,0 +1,13 @@
+{
+    "resource": "/events/{eventId}",
+    "path": "/events/UNKNOWN",
+    "httpMethod": "GET",
+    "pathParameters": {
+        "eventId": "UNKNOWN"
+    },
+    "requestContext": {
+        "requestId": "console-test-get-unknown"
+    },
+    "body": null,
+    "isBase64Encoded": false
+}

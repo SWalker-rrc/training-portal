@@ -1,0 +1,14 @@
+{
+    "resource": "/events",
+    "path": "/events",
+    "httpMethod": "POST",
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "pathParameters": null,
+    "requestContext": {
+        "requestId": "console-test-post-missing-title"
+    },
+    "body": "{\"eventId\":\"TRN901\"}",
+    "isBase64Encoded": false
+}

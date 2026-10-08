@@ -1,0 +1,11 @@
+{
+    "resource": "/events",
+    "path": "/events",
+    "httpMethod": "GET",
+    "pathParameters": null,
+    "requestContext": {
+        "requestId": "console-test-list-events"
+    },
+    "body": null,
+    "isBase64Encoded": false
+}

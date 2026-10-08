@@ -1,0 +1,14 @@
+{
+    "resource": "/events",
+    "path": "/events",
+    "httpMethod": "POST",
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "pathParameters": null,
+    "requestContext": {
+        "requestId": "console-test-post-trn900"
+    },
+    "body": "{\"eventId\":\"TRN900\",\"title\":\"Operational Review\",\"status\":\"DRAFT\"}",
+    "isBase64Encoded": false
+}

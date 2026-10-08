@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yarrow-Mullein Bank | Training &amp; Compliance Event Registration Portal</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="app-header">
+    <div class="app-header__brand">
+      <span class="app-header__bank">Yarrow-Mullein Bank</span>
+      <span class="app-header__app">Training &amp; Compliance Event Registration Portal</span>
+    </div>
+    <div class="app-header__meta">
+      <span class="badge badge--demo" title="This application runs on mock data stored in your browser">Demo Mode</span>
+      <span id="auth-user-email" class="auth-user-email" hidden></span>
+      <button id="auth-signin-btn" class="button button--secondary button--small" type="button">Sign In</button>
+      <button id="auth-signout-btn" class="button button--secondary button--small" type="button" hidden>Sign
+        Out</button>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <nav class="app-nav" aria-label="Primary">
+      <ul class="app-nav__list">
+        <li><button class="app-nav__link is-active" data-route="dashboard" type="button">Dashboard</button></li>
+        <li><button class="app-nav__link" data-route="events" type="button">Training Events</button></li>
+        <li><button class="app-nav__link" data-route="create-event" type="button">Create Event</button></li>
+        <li><button class="app-nav__link" data-route="register" type="button">Register Employee</button></li>
+        <li><button class="app-nav__link" data-route="registrations" type="button">Registrations</button></li>
+        <li><button class="app-nav__link" data-route="reports" type="button">Reports</button></li>
+      </ul>
+    </nav>
+
+    <main id="main-content" class="app-main">
+
+      <div id="status-region" class="status-region" role="status" aria-live="polite"></div>
+
+      <section class="panel" aria-labelledby="connection-settings-heading">
+        <h2 id="connection-settings-heading">Connection</h2>
+        <p id="connection-settings-status">Connection settings are stored in this browser.</p>
+        <details>
+          <summary>Connection settings</summary>
+          <form id="connection-settings-form">
+            <div class="field">
+              <label for="connection-api-url">API base URL</label>
+              <input id="connection-api-url" type="url" autocomplete="url" required>
+            </div>
+            <div class="field">
+              <label for="connection-cognito-domain">Cognito domain URL</label>
+              <input id="connection-cognito-domain" type="url" autocomplete="url" required>
+            </div>
+            <div class="field">
+              <label for="connection-client-id">Cognito public app client ID</label>
+              <input id="connection-client-id" type="text" autocomplete="off" required>
+            </div>
+            <p class="form-note">Saved only in this browser. Do not enter passwords, client secrets, or tokens.</p>
+            <div class="form-actions">
+              <button type="submit" class="button button--primary">Save settings</button>
+            </div>
+          </form>
+        </details>
+      </section>
+
+      <!-- Dashboard -->
+      <section id="route-dashboard" class="route" data-route-section="dashboard">
+        <h1>Dashboard</h1>
+
+        <div class="summary-grid">
+          <article class="summary-card">
+            <p class="summary-card__label">Total Events</p>
+            <p class="summary-card__value" id="stat-total-events">0</p>
+          </article>
+          <article class="summary-card">
+            <p class="summary-card__label">Open Registrations</p>
+            <p class="summary-card__value" id="stat-open-registrations">0</p>
+          </article>
+          <article class="summary-card">
+            <p class="summary-card__label">Completed Sessions</p>
+            <p class="summary-card__value" id="stat-completed-sessions">0</p>
+          </article>
+          <article class="summary-card">
+            <p class="summary-card__label">Upcoming Compliance Events</p>
+            <p class="summary-card__value" id="stat-upcoming-compliance">0</p>
+          </article>
+        </div>
+
+        <div class="dashboard-columns">
+          <section class="panel" aria-labelledby="upcoming-events-heading">
+            <h2 id="upcoming-events-heading">Upcoming Events</h2>
+            <ul class="list" id="upcoming-events-list"></ul>
+          </section>
+
+          <section class="panel" aria-labelledby="recent-activity-heading">
+            <h2 id="recent-activity-heading">Recent Registration Activity</h2>
+            <ul class="list" id="recent-activity-list"></ul>
+          </section>
+        </div>
+
+        <section class="panel service-health">
+          <h2>Service Health</h2>
+          <p><span class="health-dot" aria-hidden="true"></span> Demo API: <strong id="health-status">Online</strong>
+          </p>
+        </section>
+      </section>
+
+      <!-- Training Events -->
+      <section id="route-events" class="route" data-route-section="events" hidden>
+        <h1>Training Events</h1>
+
+        <form class="filter-bar" id="events-filter-form">
+          <div class="field">
+            <label for="filter-event-type">Event type</label>
+            <select id="filter-event-type" name="eventType">
+              <option value="">All types</option>
+              <option value="SECURITY_TRAINING">Security Training</option>
+              <option value="COMPLIANCE">Compliance</option>
+              <option value="BCP_DR">BCP / DR</option>
+              <option value="IT_CHANGE">IT Change</option>
+              <option value="CUSTOMER_EDUCATION">Customer Education</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="filter-event-status">Status</label>
+            <select id="filter-event-status" name="status">
+              <option value="">All statuses</option>
+              <option value="DRAFT">Draft</option>
+              <option value="PUBLISHED">Published</option>
+              <option value="CLOSED">Closed</option>
+              <option value="CANCELLED">Cancelled</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="filter-event-search">Search</label>
+            <input type="search" id="filter-event-search" name="search" placeholder="Search by title">
+          </div>
+        </form>
+
+        <div class="table-wrap">
+          <table class="data-table">
+            <caption class="sr-only">Training events</caption>
+            <thead>
+              <tr>
+                <th scope="col">Event ID</th>
+                <th scope="col">Title</th>
+                <th scope="col">Type</th>
+                <th scope="col">Delivery</th>
+                <th scope="col">Date</th>
+                <th scope="col">Capacity</th>
+                <th scope="col">Registered</th>
+                <th scope="col">Status</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="events-table-body"></tbody>
+          </table>
+        </div>
+        <p id="events-empty-state" class="empty-state" hidden>No training events match your filters.</p>
+      </section>
+
+      <!-- Create Event -->
+      <section id="route-create-event" class="route" data-route-section="create-event" hidden>
+        <h1>Create Training Event</h1>
+
+        <form id="create-event-form" novalidate>
+          <div class="field">
+            <label for="event-title">Title <span class="required" aria-hidden="true">*</span></label>
+            <input type="text" id="event-title" name="title" required aria-describedby="event-title-error">
+            <p class="field-error" id="event-title-error" aria-live="polite"></p>
+          </div>
+
+          <div class="field">
+            <label for="event-description">Description <span class="required" aria-hidden="true">*</span></label>
+            <textarea id="event-description" name="description" rows="3" required
+              aria-describedby="event-description-error"></textarea>
+            <p class="field-error" id="event-description-error" aria-live="polite"></p>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="event-type">Event type <span class="required" aria-hidden="true">*</span></label>
+              <select id="event-type" name="eventType" required aria-describedby="event-type-error">
+                <option value="">Select a type</option>
+                <option value="SECURITY_TRAINING">Security Training</option>
+                <option value="COMPLIANCE">Compliance</option>
+                <option value="BCP_DR">BCP / DR</option>
+                <option value="IT_CHANGE">IT Change</option>
+                <option value="CUSTOMER_EDUCATION">Customer Education</option>
+              </select>
+              <p class="field-error" id="event-type-error" aria-live="polite"></p>
+            </div>
+
+            <div class="field">
+              <label for="event-delivery-mode">Delivery mode <span class="required" aria-hidden="true">*</span></label>
+              <select id="event-delivery-mode" name="deliveryMode" required
+                aria-describedby="event-delivery-mode-error">
+                <option value="">Select a mode</option>
+                <option value="IN_PERSON">In Person</option>
+                <option value="TEAMS">Teams</option>
+                <option value="HYBRID">Hybrid</option>
+              </select>
+              <p class="field-error" id="event-delivery-mode-error" aria-live="polite"></p>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="event-location">Location <span class="required" aria-hidden="true">*</span></label>
+            <input type="text" id="event-location" name="location" required aria-describedby="event-location-error">
+            <p class="field-error" id="event-location-error" aria-live="polite"></p>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="event-date">Date <span class="required" aria-hidden="true">*</span></label>
+              <input type="date" id="event-date" name="date" required aria-describedby="event-date-error">
+              <p class="field-error" id="event-date-error" aria-live="polite"></p>
+            </div>
+
+            <div class="field">
+              <label for="event-capacity">Capacity <span class="required" aria-hidden="true">*</span></label>
+              <input type="number" id="event-capacity" name="capacity" min="1" step="1" required
+                aria-describedby="event-capacity-error">
+              <p class="field-error" id="event-capacity-error" aria-live="polite"></p>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="event-owner-department">Owner department <span class="required"
+                  aria-hidden="true">*</span></label>
+              <select id="event-owner-department" name="ownerDepartment" required
+                aria-describedby="event-owner-department-error">
+                <option value="">Select a department</option>
+                <option>Security Services</option>
+                <option>Compliance</option>
+                <option>IT Risk</option>
+                <option>Application Development</option>
+                <option>Service Desk</option>
+                <option>Business Continuity</option>
+                <option>Customer Experience</option>
+                <option>Banking Operations</option>
+              </select>
+              <p class="field-error" id="event-owner-department-error" aria-live="polite"></p>
+            </div>
+
+            <div class="field">
+              <label for="event-data-classification">Data classification <span class="required"
+                  aria-hidden="true">*</span></label>
+              <select id="event-data-classification" name="dataClassification" required
+                aria-describedby="event-data-classification-error">
+                <option value="">Select classification</option>
+                <option value="Internal">Internal</option>
+                <option value="Confidential">Confidential</option>
+              </select>
+              <p class="field-error" id="event-data-classification-error" aria-live="polite"></p>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="button button--primary">Create Event</button>
+            <button type="reset" class="button button--secondary">Clear Form</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Register Employee -->
+      <section id="route-register" class="route" data-route-section="register" hidden>
+        <h1>Register Employee</h1>
+
+        <form id="register-form" novalidate>
+          <div class="field">
+            <label for="register-event">Training event <span class="required" aria-hidden="true">*</span></label>
+            <select id="register-event" name="eventId" required aria-describedby="register-event-error"></select>
+            <p class="field-error" id="register-event-error" aria-live="polite"></p>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="register-employee-id">Employee ID <span class="required" aria-hidden="true">*</span></label>
+              <input type="text" id="register-employee-id" name="employeeId" required
+                aria-describedby="register-employee-id-error">
+              <p class="field-error" id="register-employee-id-error" aria-live="polite"></p>
+            </div>
+
+            <div class="field">
+              <label for="register-employee-name">Employee name <span class="required"
+                  aria-hidden="true">*</span></label>
+              <input type="text" id="register-employee-name" name="employeeName" required
+                aria-describedby="register-employee-name-error">
+              <p class="field-error" id="register-employee-name-error" aria-live="polite"></p>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="register-department">Department <span class="required" aria-hidden="true">*</span></label>
+              <select id="register-department" name="department" required aria-describedby="register-department-error">
+                <option value="">Select a department</option>
+                <option>Security Services</option>
+                <option>Compliance</option>
+                <option>IT Risk</option>
+                <option>Application Development</option>
+                <option>Service Desk</option>
+                <option>Business Continuity</option>
+                <option>Customer Experience</option>
+                <option>Banking Operations</option>
+              </select>
+              <p class="field-error" id="register-department-error" aria-live="polite"></p>
+            </div>
+
+            <div class="field">
+              <label for="register-via">Registered via <span class="required" aria-hidden="true">*</span></label>
+              <select id="register-via" name="registeredVia" required aria-describedby="register-via-error">
+                <option value="">Select channel</option>
+                <option value="API">API</option>
+                <option value="WebPortalSSO">Web Portal SSO</option>
+                <option value="Admin">Admin</option>
+              </select>
+              <p class="field-error" id="register-via-error" aria-live="polite"></p>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="button button--primary">Register Employee</button>
+            <button type="reset" class="button button--secondary">Clear Form</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Registrations -->
+      <section id="route-registrations" class="route" data-route-section="registrations" hidden>
+        <h1>Registrations</h1>
+
+        <form class="filter-bar" id="registrations-filter-form">
+          <div class="field">
+            <label for="filter-reg-event">Event</label>
+            <select id="filter-reg-event" name="eventId">
+              <option value="">All events</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="filter-reg-department">Department</label>
+            <select id="filter-reg-department" name="department">
+              <option value="">All departments</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="filter-reg-status">Status</label>
+            <select id="filter-reg-status" name="status">
+              <option value="">All statuses</option>
+              <option value="ACTIVE">Active</option>
+              <option value="CANCELLED">Cancelled</option>
+              <option value="COMPLETED">Completed</option>
+              <option value="NO_SHOW">No Show</option>
+            </select>
+          </div>
+        </form>
+
+        <div class="table-wrap">
+          <table class="data-table">
+            <caption class="sr-only">Registrations</caption>
+            <thead>
+              <tr>
+                <th scope="col">Registration ID</th>
+                <th scope="col">Event ID</th>
+                <th scope="col">Employee ID</th>
+                <th scope="col">Employee name</th>
+                <th scope="col">Department</th>
+                <th scope="col">Status</th>
+                <th scope="col">Attendance</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="registrations-table-body"></tbody>
+          </table>
+        </div>
+        <p id="registrations-empty-state" class="empty-state" hidden>No registrations match your filters.</p>
+      </section>
+
+      <!-- Reports -->
+      <section id="route-reports" class="route" data-route-section="reports" hidden>
+        <h1>Reports</h1>
+
+        <section class="panel">
+          <h2>Event Completion Rate</h2>
+          <div id="completion-rate-bars" class="progress-list"></div>
+        </section>
+
+        <section class="panel">
+          <h2>Registrations by Department</h2>
+          <div id="department-bars" class="progress-list"></div>
+        </section>
+
+        <section class="panel">
+          <h2>Data Management</h2>
+          <div class="form-actions">
+            <button type="button" class="button button--secondary" id="export-data-btn">Export demo data as
+              JSON</button>
+            <button type="button" class="button button--danger" id="reset-data-btn">Reset demo data</button>
+          </div>
+        </section>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="app-footer">
+    <p>Yarrow-Mullein Bank &mdash; Training &amp; Compliance Demo</p>
+    <p>Deployed by: <!-- TODO: replace with your name -->Student Name</p>
+  </footer>
+
+  <div id="confirm-dialog" class="dialog-overlay" hidden>
+    <div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="confirm-dialog-title"
+      aria-describedby="confirm-dialog-message">
+      <h2 id="confirm-dialog-title">Please confirm</h2>
+      <p id="confirm-dialog-message"></p>
+      <div class="form-actions">
+        <button type="button" class="button button--danger" id="confirm-dialog-confirm">Confirm</button>
+        <button type="button" class="button button--secondary" id="confirm-dialog-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
